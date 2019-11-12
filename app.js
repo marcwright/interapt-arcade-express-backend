@@ -55,7 +55,7 @@ app.get('/images', (req, res) => {
     .catch(e => console.log(e));
 })
 app.get('/sign-s3', (req, res) => {
-  console.log("AWS_SECRET_ACCESS_KEY", process.env.AWS_SECRET_ACCESS_KEY)
+  console.log("AWS_SECRET_ACCESS_KEY", process.env.S3_BUCKET)
   console.log('sign-s3 route', req.query)
   const s3 = new aws.S3();
   const fileName = req.query['file-name'];
