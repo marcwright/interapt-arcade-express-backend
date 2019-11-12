@@ -9,12 +9,14 @@ const multer = require('multer');
 const upload = multer({
   dest: 'public/uploads/' // this saves your file into a directory called "uploads"
 });
-const db = require('./models')
+// const db = require('./models')
 // import models from './models';
 require('dotenv').config()
 
 const S3_BUCKET = process.env.S3_BUCKET_NAME;
 aws.config.region = 'us-east-1';
+
+const User = require('./models').User
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -54,6 +56,7 @@ app.get('/images', (req, res) => {
     })
     .catch(e => console.log(e));
 })
+
 app.get('/sign-s3', (req, res) => {
   console.log("AWS_SECRET_ACCESS_KEY", S3_BUCKET)
   console.log('sign-s3 route', req.query)
@@ -78,8 +81,24 @@ app.get('/sign-s3', (req, res) => {
       url: `https://${S3_BUCKET}.s3.amazonaws.com/${fileName}`
     };
     // SEQUELIZE returnData.url
-    res.json(returnData);
-    res.end();
+    let newUser = {
+      fullName: "Marc Wright",
+      appName: "Marc Test",
+      deployUrl: "https://pages.git.generalassemb.ly/alaghmani123/Project-2-prayer-times/",
+      gitHubRepo: "https://git.generalassemb.ly/alaghmani123/Project-2-prayer-times",
+      imageUrl: returnData.url,
+      project: 3
+    }
+
+    User.create(newUser)
+      .then(user => {
+        returnData.user = user
+        res.json(returnData);
+        res.end();
+      })
+
+    // res.json(returnData);
+    // res.end();
   });
 });
 
