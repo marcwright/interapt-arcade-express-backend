@@ -13,7 +13,7 @@ const db = require('./models')
 // import models from './models';
 require('dotenv').config()
 
-const S3_BUCKET = process.env.S3_BUCKET;
+const S3_BUCKET = process.env.S3_BUCKET_NAME;
 aws.config.region = 'us-east-1';
 
 var indexRouter = require('./routes/index');
@@ -55,13 +55,13 @@ app.get('/images', (req, res) => {
     .catch(e => console.log(e));
 })
 app.get('/sign-s3', (req, res) => {
-  console.log("AWS_SECRET_ACCESS_KEY", process.env.S3_BUCKET)
+  console.log("AWS_SECRET_ACCESS_KEY", S3_BUCKET)
   console.log('sign-s3 route', req.query)
   const s3 = new aws.S3();
   const fileName = req.query['file-name'];
   const fileType = req.query['file-type'];
   const s3Params = {
-    Bucket: process.env.S3_BUCKET,
+    Bucket: S3_BUCKET,
     Key: fileName,
     Expires: 60,
     ContentType: fileType,
@@ -75,7 +75,7 @@ app.get('/sign-s3', (req, res) => {
     }
     const returnData = {
       signedRequest: data,
-      url: `https://${process.env.S3_BUCKET}.s3.amazonaws.com/${fileName}`
+      url: `https://${S3_BUCKET}.s3.amazonaws.com/${fileName}`
     };
     // SEQUELIZE returnData.url
     res.json(returnData);
