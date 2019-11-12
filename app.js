@@ -4,10 +4,17 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const cors = require('cors')
+const aws = require('aws-sdk');
 const multer = require('multer');
 const upload = multer({
   dest: 'public/uploads/' // this saves your file into a directory called "uploads"
 });
+const db = require('./models')
+// import models from './models';
+require('dotenv').config()
+
+const S3_BUCKET = process.env.S3_BUCKET;
+aws.config.region = 'us-east-1';
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -30,8 +37,49 @@ app.use('/users', usersRouter);
 
 // It's very crucial that the file name matches the name attribute in your html
 app.post('/upload', upload.single('myImage'), (req, res) => {
-  console.log(res.req.file.path)
-  res.json(res.req.file.path);
+  console.log(res.req.file)
+  db.Image.create({ image: res.req.file.path })
+    .then(image => {
+      console.log(image)
+      res.json(image);
+
+    })
+});
+
+app.get('/images', (req, res) => {
+  db.Image.findAll()
+    .then(images => {
+      console.log(images)
+      res.status(200).json({ images: images });
+    })
+    .catch(e => console.log(e));
+})
+app.get('/sign-s3', (req, res) => {
+  // console.log("AWS_SECRET_ACCESS_KEY", process.env.AWS_SECRET_ACCESS_KEY)
+  // console.log('sign-s3 route', req.query)
+  const s3 = new aws.S3();
+  const fileName = req.query['file-name'];
+  const fileType = req.query['file-type'];
+  const s3Params = {
+    Bucket: S3_BUCKET,
+    Key: fileName,
+    Expires: 60,
+    ContentType: fileType,
+    ACL: 'public-read'
+  };
+
+  s3.getSignedUrl('putObject', s3Params, (err, data) => {
+    if (err) {
+      console.log(err);
+      return res.end();
+    }
+    const returnData = {
+      signedRequest: data,
+      url: `https://${S3_BUCKET}.s3.amazonaws.com/${fileName}`
+    };
+    res.json(returnData);
+    res.end();
+  });
 });
 
 // catch 404 and forward to error handler
