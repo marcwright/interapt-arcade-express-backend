@@ -13,7 +13,7 @@
   },
   "production": {
     "database": "interapt_cade_production",
-    "host": "127.0.0.1",
+    "host": "postgres://ddsvqrlqsvrcuw:b77495238254490ba0399f430979257a09c7c3fda202872ce4b5e4b4a22e792c@ec2-54-225-76-136.compute-1.amazonaws.com:5432/ddpipmsjvdaejc",
     "dialect": "postgresql",
     "operatorsAliases": false
   }
