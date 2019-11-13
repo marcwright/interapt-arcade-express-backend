@@ -18,9 +18,6 @@ aws.config.region = 'us-east-1';
 
 const User = require('./models').User
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-
 var app = express();
 
 // view engine setup
@@ -34,8 +31,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/api/users', usersRouter);
+app.use('/api/users', require('./routes/users'));
 
 // It's very crucial that the file name matches the name attribute in your html
 app.post('/upload', upload.single('myImage'), (req, res) => {
