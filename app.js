@@ -54,8 +54,9 @@ app.get('/images', (req, res) => {
 })
 
 app.get('/sign-s3', (req, res) => {
-  console.log("AWS_SECRET_ACCESS_KEY", S3_BUCKET)
-  console.log('sign-s3 route', req.query)
+  // console.log("AWS_SECRET_ACCESS_KEY", S3_BUCKET)
+  // console.log('sign-s3 route', req.query)
+  console.log(req.query)
   const s3 = new aws.S3();
   const fileName = req.query['file-name'];
   const fileType = req.query['file-type'];
@@ -78,12 +79,12 @@ app.get('/sign-s3', (req, res) => {
     };
     // SEQUELIZE returnData.url
     let newUser = {
-      fullName: "Marc Wright",
-      appName: "Marc Test",
-      deployUrl: "https://pages.git.generalassemb.ly/alaghmani123/Project-2-prayer-times/",
-      gitHubRepo: "https://git.generalassemb.ly/alaghmani123/Project-2-prayer-times",
+      fullName: req.query.fullName,
+      appName: req.query.appName,
+      deployUrl: req.query.deployUrl,
+      gitHubRepo: req.query.gitHubRepo,
       imageUrl: returnData.url,
-      project: 3
+      project: req.query.project
     }
 
     User.create(newUser)
